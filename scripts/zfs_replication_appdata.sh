@@ -64,29 +64,12 @@ syncoid_mode="strict-mirror"
 ##########
 #
 # rsync replication variables. You do not need these if replication set to zfs or no
-parent_destination_folder="/mnt/user/backup/nas-docker" # This is the parent directory in which a child directory will be created containing the replicated data (rsync)
-rsync_type="mirror" # set to "incremental" for dated incremental backups or "mirror" for mirrored backups
+parent_destination_folder=""
+rsync_type=""
 #
 
 # List of relative paths to exclude from rsync
-rsync_excludes=(
-    "qBittorrent/config/ipc-socket"
-    "logs/"
-    "MediaCover/"
-    "Library/Application Support/Plex Media Server/Metadata/"
-    "Library/Application Support/Plex Media Server/Plug-in Support/Caches/"
-    "Library/Application Support/Plex Media Server/Cache/"
-    "Library/Application Support/Plex Media Server/Media/"
-    "Library/Application Support/Plex Media Server/Logs/"
-    "Library/Application Support/Plex Media Server/Crash Reports/"
-    "cache/"
-    ".cache/"
-    "machine-learning/"
-    "log/"
-    "thumbs/"
-    "VueTorrent/.git/"
-    "tautulli/newsletters/"
-)
+rsync_excludes=()
 ####################
 #
 # This function sends notifications (Telegram)

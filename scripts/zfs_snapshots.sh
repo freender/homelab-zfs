@@ -57,9 +57,9 @@ replication="none"   #this is set to the method for how you want to have the sou
 #
 ##########
 # zfs replication variables. You do NOT need these if replication set to "rsync" or "none"
-destination_pool="disk1"  #this is the zpool in which your destination dataset will be created
-parent_destination_dataset="backup" #this is the parent dataset in which a child dataset will be created containing the replicated data (zfs replication)
-child_destination_dataset="nas-docker" #works only if source_dataset_auto_select = no
+destination_pool=""
+parent_destination_dataset=""
+child_destination_dataset=""
 # For ZFS replication syncoid is used. The below variable sets some options for that.
 # "strict-mirror" Strict mirroring that both mirrors the source and repairs mismatches (uses --force-delete flag).This will delete snapshots in the destination which are not in the source.
 # "basic" Basic replication without any additional flags will not delete snapshots in destination if not in the source
@@ -68,29 +68,12 @@ syncoid_mode="strict-mirror"
 ##########
 #
 # rsync replication variables. You do not need these if replication set to zfs or no
-parent_destination_folder="/mnt/user/backup/nas-docker" # This is the parent directory in which a child directory will be created containing the replicated data (rsync)
-rsync_type="mirror" # set to "incremental" for dated incremental backups or "mirror" for mirrored backups
+parent_destination_folder=""
+rsync_type=""
 #
 
 # List of relative paths to exclude from rsync
-rsync_excludes=(
-    "qBittorrent/config/ipc-socket"
-    "logs/"
-    "MediaCover/"
-    "Library/Application Support/Plex Media Server/Metadata/"
-    "Library/Application Support/Plex Media Server/Plug-in Support/Caches/"
-    "Library/Application Support/Plex Media Server/Cache/"
-    "Library/Application Support/Plex Media Server/Media/"
-    "Library/Application Support/Plex Media Server/Logs/"
-    "Library/Application Support/Plex Media Server/Crash Reports/"
-    "cache/"
-    ".cache/"
-    "machine-learning/"
-    "log/"
-    "thumbs/"
-    "VueTorrent/.git/"
-    "tautulli/newsletters/"
-)
+rsync_excludes=()
 ####################
 #
 # This function sends notifications (Telegram)
