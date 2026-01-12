@@ -33,15 +33,15 @@ ZED_EVENTS=(
     "checksum"
 )
 
-ZFS_DEST_DIR="/mnt/cache/backup/zfs-scripts"
+ZFS_DEST_DIR="\$HOME/zfs-scripts"
 ZFS_SCRIPTS=(
     "zfs_snapshots.sh"
     "zfs_replication_appdata.sh"
 )
 
 LOG_DIR="\$HOME/zfs-logs"
-CRON_SNAPSHOT_LINE='00 0 * * * sudo /mnt/cache/backup/zfs-scripts/zfs_snapshots.sh >> $HOME/zfs-logs/zfs_snapshots.log 2>&1'
-CRON_REPL_LINE='10 0 * * * sudo /mnt/cache/backup/zfs-scripts/zfs_replication_appdata.sh >> $HOME/zfs-logs/zfs_replication_appdata.log 2>&1'
+CRON_SNAPSHOT_LINE='00 0 * * * sudo $HOME/zfs-scripts/zfs_snapshots.sh >> $HOME/zfs-logs/zfs_snapshots.log 2>&1'
+CRON_REPL_LINE='10 0 * * * sudo $HOME/zfs-scripts/zfs_replication_appdata.sh >> $HOME/zfs-logs/zfs_replication_appdata.log 2>&1'
 
 update_cron() {
     local host="$1"
@@ -79,7 +79,7 @@ for host in $HOSTS; do
     fi
 
     echo "    Copying ZFS scripts..."
-    ssh "$host" "sudo mkdir -p $ZFS_DEST_DIR"
+    ssh "$host" "mkdir -p $ZFS_DEST_DIR"
     for script in "${ZFS_SCRIPTS[@]}"; do
         scp "${SCRIPT_DIR}/scripts/${script}" "${host}:/tmp/${script}"
         ssh "$host" "sudo mv /tmp/${script} $ZFS_DEST_DIR/${script} && sudo chmod +x $ZFS_DEST_DIR/${script}"
