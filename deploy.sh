@@ -78,6 +78,9 @@ for host in $HOSTS; do
         ssh "$host" "sudo systemctl status zfs-zed --no-pager -l" || true
     fi
 
+    echo "    Ensuring sanoid/syncoid..."
+    ssh "$host" "if ! command -v sanoid >/dev/null 2>&1 || ! command -v syncoid >/dev/null 2>&1; then sudo apt-get update -qq; sudo apt-get install -y sanoid; fi"
+
     echo "    Copying ZFS scripts..."
     ssh "$host" "mkdir -p $ZFS_DEST_DIR"
     for script in "${ZFS_SCRIPTS[@]}"; do
