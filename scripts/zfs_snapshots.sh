@@ -11,10 +11,10 @@
 #
 ####################
 #
-#Unraid notifications during process (sent to Unraid gui etc)
-notification_type="error"  # set to "all" for both success & failure, to "error"for only failure or "none" for no notices to be sent.
-notify_tune="no"  # as well as a notifiction, if sucessful it will play the Mario "achievment tune" or failure StarWars imperial march tune on beep speaker!
-                   # sometimes good to have an audiable notification!! Set to "no" for silence. (this function your server needs a beep speaker)
+# Notification settings
+notification_type="error"  # set to "all" for both success & failure, "error" for only failure, or "none" for no notices to be sent.
+notify_tune="no"
+TELEGRAM_ENV="/etc/zfs/zed.d/.env"
 #
 ####################
 # Source for snapshotting and/or replication
@@ -93,48 +93,45 @@ rsync_excludes=(
 )
 ####################
 #
-# This function is to send messages to Unraid gui etc
+# This function sends notifications (Telegram)
 #
 unraid_notify() {
     local message="$1"
     local flag="$2"
-    #
-    # Check the notification_type variable
+
     if [[ "$notification_type" == "none" ]]; then
-        return 0  # Exit the function if notification_type is set to 'none'
+        return 0
     fi
-    #
-    # If notification_type is set to 'error' and the flag is 'success', exit the function
+
     if [[ "$notification_type" == "error" && "$flag" == "success" ]]; then
-        return 0  # Do not process success messages
+        return 0
     fi
-    #
-    # Determine the severity of the message based on the flag it received
-    local severity
-if [[ "$flag" == "success" ]]; then
-    severity="normal"
-    # Play success tune based on the value of 'notify_tune' and 'tune'
-    if [[ "$notify_tune" == "yes" ]]; then
-        if [[ "$tune" == "2" ]]; then
-        # plays the old nokia ring tone (only used on snapshot sucess)
-            beep -l 150 -f 1318.51022765 -n -l 150 -f 1174.65907167 -n -l 270 -f 739.988845423 -n -l 240 -f 830.60939516 -n -l 120 -f 1108.73052391 -n -l 150 -f 987.766602512 -n -l 270 -f 587.329535835 -n -l 240 -f 659.255113826 -n -l 150 -f 987.766602512 -n -l 120 -f 880.0 -n -l 270 -f 554.365261954 -n -l 240 -f 659.255113826 -n -l 1050 -f 880.0
-        tune="1"
-        else
-        # plays the Mario achievement tune !! this is the main sucess tune used
-            beep -f 130 -l 100 -n -f 262 -l 100 -n -f 330 -l 100 -n -f 392 -l 100 -n -f 523 -l 100 -n -f 660 -l 100 -n -f 784 -l 300 -n -f 660 -l 300 -n -f 146 -l 100 -n -f 262 -l 100 -n -f 311 -l 100 -n -f 415 -l 100 -n -f 523 -l 100 -n -f 622 -l 100 -n -f 831 -l 300 -n -f 622 -l 300 -n -f 155 -l 100 -n -f 294 -l 100 -n -f 349 -l 100 -n -f 466 -l 100 -n -f 588 -l 100 -n -f 699 -l 100 -n -f 933 -l 300 -n -f 933 -l 100 -n -f 933 -l 100 -n -f 933 -l 100 -n -f 1047 -l 400
-        fi
+
+    local env_file="${TELEGRAM_ENV:-/etc/zfs/zed.d/.env}"
+    local token=""
+    local chat_id=""
+
+    if [[ -f "$env_file" ]]; then
+        # shellcheck disable=SC1090
+        source "$env_file"
+        token="${TELEGRAM_TOKEN:-}"
+        chat_id="${TELEGRAM_CHAT_ID:-${TELEGRAM_CHATID:-}}"
     fi
-    else
-        severity="warning"
-        # Play failure tune if notify_tune is set to 'yes'
-        if [[ "$notify_tune" == "yes" ]]; then
-        # plays the Starwars imperial march tune !!
-            beep -l 350 -f 392 -D 100 -n -l 350 -f 392 -D 100 -n -l 350 -f 392 -D 100 -n -l 250 -f 311.1 -D 100 -n -l 25 -f 466.2 -D 100 -n -l 350 -f 392 -D 100 -n -l 250 -f 311.1 -D 100 -n -l 25 -f 466.2 -D 100 -n -l 700 -f 392 -D 100 -n -l 350 -f 587.32 -D 100 -n -l 350 -f 587.32 -D 100 -n -l 350 -f 587.32 -D 100 -n -l 250 -f 622.26 -D 100 -n -l 25 -f 466.2 -D 100 -n -l 350 -f 369.99 -D 100 -n -l 250 -f 311.1 -D 100 -n -l 25 -f 466.2 -D 100 -n -l 700 -f 392 -D 100 -n -l 350 -f 784 -D 100 -n -l 250 -f 392 -D 100 -n -l 25 -f 392 -D 100 -n -l 350 -f 784 -D 100 -n -l 250 -f 739.98 -D 100 -n -l 25 -f 698.46 -D 100 -n -l 25 -f 659.26 -D 100 -n -l 25 -f 622.26 -D 100 -n -l 50 -f 659.26 -D 400 -n -l 25 -f 415.3 -D 200 -n -l 350 -f 554.36 -D 100 -n -l 250 -f 523.25 -D 100 -n -l 25 -f 493.88 -D 100 -n -l 25 -f 466.16 -D 100 -n -l 25 -f 440 -D 100 -n -l 50 -f 466.16 -D 400 -n -l 25 -f 311.13 -D 200 -n -l 350 -f 369.99 -D 100 -n -l 250 -f 311.13 -D 100 -n -l 25 -f 392 -D 100 -n -l 350 -f 466.16 -D 100 -n -l 250 -f 392 -D 100 -n -l 25 -f 466.16 -D 100 -n -l 700 -f 587.32
-       fi
+
+    if [[ -z "$token" || -z "$chat_id" ]]; then
+        logger -t zfs-scripts "Missing TELEGRAM_TOKEN/TELEGRAM_CHAT_ID for notifications"
+        echo "Notification: $message"
+        return 1
     fi
-    #
-    # Call the Unraid notification script
-    /usr/local/emhttp/webGui/scripts/notify -s "Backup Notification" -d "$message" -i "$severity"
+
+    local host
+    host=$(hostname)
+    local title="ZFS ${flag} on ${host}"
+    local text="${title}\n${message}"
+
+    curl -s -X POST "https://api.telegram.org/bot${token}/sendMessage" \
+        --data-urlencode "chat_id=${chat_id}" \
+        --data-urlencode "text=${text}" >/dev/null 2>&1 || true
 }
 #
 ####################

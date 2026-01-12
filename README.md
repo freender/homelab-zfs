@@ -47,3 +47,4 @@ ssh <host> "sudo ZEVENT_POOL=cache ZEVENT_SUBCLASS=statechange ZEVENT_VDEV_STATE
 ## Notes
 - `zfs_snapshots.sh` excludes `appdata`, `backup/appdata`, and `pbs-datastore`.
 - `zfs_replication_appdata.sh` uses ZFS replication (syncoid) to `cache/backup/appdata`.
+- Script notifications use `/etc/zfs/zed.d/.env` (same as ZED alerts).
